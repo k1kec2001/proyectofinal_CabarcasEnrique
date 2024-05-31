@@ -84,7 +84,7 @@ export const CamiAdmin = () => {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={(e) => {
+                onClick={() => {
                   setShow(false);
                 }}
               >
@@ -93,7 +93,7 @@ export const CamiAdmin = () => {
 
               <Button
                 variant="danger"
-                onClick={(e) => {
+                onClick={() => {
                   eliminarCamisa(objCami.codCamisa);
                   setShow(false);
                 }}
