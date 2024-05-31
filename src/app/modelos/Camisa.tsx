@@ -4,9 +4,9 @@ export class Camisa {
   public colorCamisa: string;
   public tallaCamisa: string;
 
-  constructor(codc: number, codm: string, colo: string, tall: string) {
+  constructor(codc: number, marc: string, colo: string, tall: string) {
     this.codCamisa = codc;
-    this.codmarcaCamisa = codm;
+    this.codmarcaCamisa = marc;
     this.colorCamisa = colo;
     this.tallaCamisa = tall;
   }

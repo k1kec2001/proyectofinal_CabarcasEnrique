@@ -1,108 +1,114 @@
 import Form from "react-bootstrap/Form";
-import NoFoto from "../../../assets/img/noDisponible.png";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
+import { useFormulario } from "../../utilidades/misHooks/useFormulario";
 import { Camisa } from "../../modelos/Camisa";
 import { ARREGLO_CAMISAS } from "../../mocks/Camisa-mocks";
 import { CamisaMarca } from "../../modelos/CamisaMarca";
 import { ARREGLO_MARCA_CAMISA } from "../../utilidades/dominios/domMarca";
-import { useFormulario } from "../../utilidades/misHooks/useFormulario";
 import { CamisaTalla } from "../../modelos/CamisaTalla";
 import { ARREGLO_TALLA_CAMISA } from "../../utilidades/dominios/domTallas";
 
-
-
 export const CamiCrear = () => {
-  const irsePara=useNavigate;
+  const irsePara = useNavigate();
 
-  type formHtml=React.FormEvent<HTMLFormElement>;
+  type formHtml = React.FormEvent<HTMLFormElement>;
+  const [enProceso, setEnProceso] = useState<boolean>(false);
 
-  const [enProceso, setEnProceso]= useState<boolean>(false);
-  const[arrCamisas]=useState<Camisa[]>(ARREGLO_CAMISAS);
-  const[arrMarca]=useState<CamisaMarca[]>(ARREGLO_MARCA_CAMISA);
-  const [arrTalla]=useState<CamisaTalla[]>(ARREGLO_TALLA_CAMISA);
+  const [arrCamisas] = useState<Camisa[]>(ARREGLO_CAMISAS);
+  const [arrMarca] = useState<CamisaMarca[]>(ARREGLO_MARCA_CAMISA);
+  const [arrTalla] = useState<CamisaTalla[]>(ARREGLO_TALLA_CAMISA);
 
-  let{
+  let {
     codmarcaCamisa,
     colorCamisa,
     tallaCamisa,
+
     dobleEnlace,
     objeto,
-  }=useFormulario<Camisa>(new Camisa(0,"","",""))
+  } = useFormulario<Camisa>(new Camisa(0, "", "", ""));
+
+  const enviarForm = (objForm: formHtml) => {
+    objForm.preventDefault();
+    const formulario = objForm.currentTarget;
+
+    if (formulario.checkValidity() === false) {
+      objForm.preventDefault();
+      objForm.stopPropagation();
+      setEnProceso(true);
+    } else {
+      const ultimaCamisa = arrCamisas[arrCamisas.length - 1];
+      const nuevoCod = ultimaCamisa.codCamisa + 1;
+      objeto.codCamisa = nuevoCod;
+      arrCamisas.push(objeto);
+      setEnProceso(false);
+      irsePara("/camlis");
+    }
+  };
 
   return (
-    <>
-      <div className="pt-5 d-flex justify-content-center">
-        <div className="col-md-8">
-          <form className="row g-3 needs-validation">
-          <div className="col-md-6 position-relative">
-              <label htmlFor="tall" className="form-label">
-                Marca
-              </label>
-              <select className="form-select border border-primary" id="marc" name="codmarcaCamisa" required value={codmarcaCamisa} onChange={dobleEnlace}>
-                <option selected disabled value="">
-                  Seleccione la marca...
-                </option>
-                {arrMarca.map((miMarca:CamisaMarca)=>(
-                  <option value={miMarca.nombreMarca}key={miMarca.nombreMarca}>
-                    {miMarca.nombreMarca}
+    <div className="d-flex justify-content-center">
+      <div className="col-md-5 mt-5 pb-4">
+        <Form noValidate validated={enProceso} onSubmit={enviarForm}>
+          <div className="card">
+            <div className="card-header">
+              <h5 className=" rojito">Formulario creación</h5>
+            </div>
+
+            <div className="card-body">
+              <div className="mb-3">
+                <Form.Group controlId="marc">
+                  <Form.Label>
+                    <span className="rojito">*</span> Marca
+                  </Form.Label>
+
+                  <Form.Select size="sm" required name="codmarcaCamisa" value={codmarcaCamisa} onChange={dobleEnlace}>
+                    <option value="">Seleccione un genero</option>
+
+                    {arrMarca.map((miMarca: CamisaMarca) => (
+                      <option value={miMarca.codMarca} key={miMarca.codMarca}>
+                        {miMarca.nombreMarca}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </div>
+
+              <div className="mb-3">
+                <Form.Group controlId="colo">
+                  <Form.Label>
+                    <span className="rojito">*</span> Color
+                  </Form.Label>
+                  <Form.Control size="sm" required type="text" name="colorCamisa" value={colorCamisa} onChange={dobleEnlace} />
+                </Form.Group>
+              </div>
+
+              <div className="col-md-6 position-relative">
+                <label htmlFor="tall" className="form-label">
+                  <span className="rojito">*</span> Talla
+                </label>
+                <Form.Select size="sm" required id="tall" name="tallaCamisa" value={tallaCamisa} onChange={dobleEnlace}>
+                  <option selected disabled value="">
+                    Seleccione la talla...
                   </option>
-                ))}
-
-              </select>
+                  {arrTalla.map((miTalla: CamisaTalla) => (
+                    <option value={miTalla.tallaCamisa} key={miTalla.tallaCamisa}>
+                      {miTalla.tallaCamisa}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
             </div>
 
-            <div className="col-md-6 position-relative">
-              <label htmlFor="colo" className="form-label">
-                Color
-              </label>
-              <input
-                type="text"
-                className="form-control border border-primary"
-                id="colo"
-                name="colorCamisa" value={colorCamisa} onChange={dobleEnlace}
-                required
-              />
-            </div>
-
-            <div className="col-md-6 position-relative">
-              <label htmlFor="preci" className="form-label">
-                Precio
-              </label>
-              <input
-                type="text"
-                className="form-control border border-primary"
-                id="preci"
-                name="preci"
-                required
-              />
-            </div>
-
-            <div className="col-md-6 position-relative">
-              <label htmlFor="tall" className="form-label">
-                Talla
-              </label>
-              <select className="form-select border border-primary" id="tall" name="tallaCamisa" required value={tallaCamisa} onChange={dobleEnlace}>
-                <option selected disabled value="">
-                  Seleccione su talla...
-                </option>
-                {arrTalla.map((miTalla:CamisaTalla)=>(
-                  <option value={miTalla.tallaCamisa}key={miTalla.tallaCamisa}>
-                    {miTalla.tallaCamisa}
-                  </option>
-                ))}
-
-              </select>
-            </div>
-
-            <div className="col-12">
-              <button className="btn btn-primary" type="submit">
-                Registrar Camisa
+            <div className="card-footer">
+              <button type="submit" className="btn btn-primary">
+                Crear Camisa
               </button>
             </div>
-          </form>
-        </div>
+          </div>
+        </Form>
       </div>
-    </>
+    </div>
   );
 };
